@@ -1,13 +1,13 @@
 {
-  "name": "lotto",
+  "name": "word-relay",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "webpack serve --env development"
   },
   "author": "bear",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -22,5 +22,8 @@
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.10.1"
-  }
+  },
+  "browserslist": [
+    "> 1% in KR"
+  ]
 }
