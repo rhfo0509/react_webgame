@@ -54,17 +54,12 @@ const Td = ({ rowIndex, cellIndex }) => {
       case CODE.CLICKED_MINE:
         return "펑";
       default:
-        return code || '';
+        return code || "";
     }
   };
   const onClickTd = useCallback(() => {
     if (halted) return;
-    console.log(
-      "onClickTd",
-      tableData[rowIndex][cellIndex],
-      rowIndex,
-      cellIndex
-    );
+    console.log("onClickTd");
     switch (tableData[rowIndex][cellIndex]) {
       case CODE.OPENED:
       case CODE.FLAG_MINE:
@@ -81,18 +76,14 @@ const Td = ({ rowIndex, cellIndex }) => {
         return;
     }
   }, [tableData[rowIndex][cellIndex], halted]);
+  // 함수 안에서 사용하는 상태나 props는 꼭 deps 배열 내에 포함
 
   const onRightClickTd = useCallback(
     (e) => {
       e.preventDefault();
 
       if (halted) return;
-      console.log(
-        "onRightClickTd",
-        tableData[rowIndex][cellIndex],
-        rowIndex,
-        cellIndex
-      );
+      console.log("onRightClickTd");
       switch (tableData[rowIndex][cellIndex]) {
         case CODE.NORMAL:
         case CODE.MINE: {
@@ -122,7 +113,7 @@ const Td = ({ rowIndex, cellIndex }) => {
       }
     },
     [tableData[rowIndex][cellIndex], halted]
-  ); // 의존성 배열에 cell CODE값을 넣어줘야 실제 tableData의 cell CODE값이 변한다.
+  ); // 함수 안에서 사용하는 상태나 props는 꼭 deps 배열 내에 포함
   return (
     <td
       style={getTdStyle(tableData[rowIndex][cellIndex])}

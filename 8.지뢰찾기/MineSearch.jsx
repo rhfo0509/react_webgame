@@ -107,7 +107,7 @@ const reducer = (state, action) => {
           if (row - 1 > -1) {
             near.push([row - 1, cell - 1]);
             near.push([row - 1, cell]);
-            near.push([row -1, cell + 1]);
+            near.push([row - 1, cell + 1]);
           }
           near.push([row, cell - 1]);
           near.push([row, cell + 1]);
@@ -121,15 +121,20 @@ const reducer = (state, action) => {
             near.push([row + 1, cell]);
             near.push([row + 1, cell + 1]);
           }
-          // 여기 보충해야 하는 부분..
-          checkAround();
+          near.forEach((v) => {
+            if (tableData[v[0]][v[1]] !== CODE.OPENED) {
+              checkAround(v[0], v[1]);
+            } 
+          })
         }
 
-        console.log(OPEN_CELL, tableData);
-        return {
-          ...state,
-          tableData,
-        };
+      };
+
+      checkAround(action.row, action.cell);
+      console.log(OPEN_CELL, tableData);
+      return {
+        ...state,
+        tableData,
       };
     }
 
