@@ -23,10 +23,16 @@ export const TableContext = createContext({
 });
 
 const initialState = {
+  data: {
+    row: 0,
+    cell: 0,
+    mine: 0,
+  },
   tableData: [],
   timer: 0,
   result: "",
   halted: true,
+  openCount: 0,
 };
 
 export const START_GAME = "START_GAME";
@@ -38,9 +44,16 @@ export const NORMALIZE_CELL = "NORMALIZE_CELL";
 
 const plantMine = (row, cell, mine) => {
   console.log(row, cell, mine);
-  const table = new Array(row)
-    .fill()
-    .map(() => new Array(cell).fill(CODE.NORMAL));
+
+  const table = [];
+  for (let i = 0; i < row; i++) {
+    const rowData = [];
+    table.push(rowData);
+    for (let j = 0; j < cell; j++) {
+      rowData.push(CODE.NORMAL);
+    }
+  }
+
   const candidate = Array(row * cell)
     .fill(0)
     .map((_, i) => i);
@@ -48,8 +61,9 @@ const plantMine = (row, cell, mine) => {
   for (let i = 0; i < mine; i++) {
     const mineIndex = Math.floor(Math.random() * candidate.length);
     const selected = candidate.splice(mineIndex, 1)[0];
-    const mineRow = parseInt(selected / row);
+    const mineRow = Math.floor(selected / cell);
     const mineCell = selected % cell;
+    console.log(mineRow, mineCell);
     table[mineRow][mineCell] = CODE.MINE;
   }
 
@@ -59,22 +73,48 @@ const plantMine = (row, cell, mine) => {
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case START_GAME:
+    case START_GAME: {
       console.log(START_GAME);
+      const data = { ...state.data };
+      data.row = action.row;
+      data.cell = action.cell;
+      data.mine = action.mine;
       return {
         ...state,
+        data,
         tableData: plantMine(action.row, action.cell, action.mine),
         halted: false,
+        openCount: 0,
       };
+    }
     case OPEN_CELL: {
       const tableData = [...state.tableData];
       // 어떤 칸이 열릴지 모르기 때문에 모든 칸을 새로 만들어줌.
       tableData.forEach((row, i) => {
         tableData[i] = [...tableData[i]];
       });
-      tableData[action.row] = [...tableData[action.row]];
+      // tableData[action.row] = [...tableData[action.row]];
 
+      const checked = [];
+      let openCount = 0;
       const checkAround = (row, cell) => {
+        // 칸이 아닌 곳이 검사 대상이 되었을 경우 필터링
+        if (
+          row < 0 ||
+          row >= tableData.length ||
+          cell < 0 ||
+          cell >= tableData[0].length
+        ) {
+          return;
+        }
+
+        // 이미 검사된 곳은 다시 검사하지 않도록 (maximum call stack size exceeded 방지)
+        if (checked.includes(row + "/" + cell)) {
+          return;
+        } else {
+          checked.push(row + "/" + cell);
+        }
+
         let around = [];
         // 이렇게 하는 대신 optional chaining을 써도 좋음.
         if (tableData[row - 1]) {
@@ -100,18 +140,17 @@ const reducer = (state, action) => {
         const mineCount = around.filter((v) =>
           [CODE.MINE, CODE.FLAG_MINE, CODE.QUESTION_MINE].includes(v)
         ).length;
-        tableData[row][cell] = mineCount;
 
         if (mineCount === 0) {
           let near = [];
-          if (row - 1 > -1) {
+          if (row > 0) {
             near.push([row - 1, cell - 1]);
             near.push([row - 1, cell]);
             near.push([row - 1, cell + 1]);
           }
           near.push([row, cell - 1]);
           near.push([row, cell + 1]);
-          if (row + 1 < tableData.length) {
+          if (row < tableData.length - 1) {
             near = near.concat([
               [row + 1, cell - 1],
               [row + 1, cell],
@@ -122,19 +161,45 @@ const reducer = (state, action) => {
             near.push([row + 1, cell + 1]);
           }
           near.forEach((v) => {
-            if (tableData[v[0]][v[1]] !== CODE.OPENED) {
+            // 이미 열려진 곳 배제는 checked 배열에서 검사하므로 안 써도 상관없으나
+            // 다시 checkAround 함수를 실행하지 않음으로써 더욱 간결해진다.
+
+            // tableData[v[0]][v[1]] < CODE.OPENED가 되어야 옳다.
+            // CODE.OPENED는 0이지만, 주변에 지뢰가 있는 경우 CODE값이 양수가 되기 때문이다.
+            // 양수인 경우도 배제해야 한다.
+            if (tableData[v[0]][v[1]] < CODE.OPENED) {
               checkAround(v[0], v[1]);
-            } 
-          })
+            }
+          });
         }
+        tableData[row][cell] = mineCount;
 
+        openCount += 1;
+        console.log(
+          `${row}행 ${cell}열 오픈, ${state.openCount + openCount}번째`
+        );
       };
-
       checkAround(action.row, action.cell);
+      // 승리 조건 검사
+      let halted = false;
+      let result = "";
+      console.log(halted, result);
+      console.log(state.data.row, state.data.cell, state.data.mine);
+      if (
+        state.data.row * state.data.cell - state.data.mine ===
+        state.openCount + openCount
+      ) {
+        halted = true;
+        result = "승리하셨습니다.";
+      }
+
       console.log(OPEN_CELL, tableData);
       return {
         ...state,
         tableData,
+        openCount: state.openCount + openCount,
+        halted,
+        result,
       };
     }
 
