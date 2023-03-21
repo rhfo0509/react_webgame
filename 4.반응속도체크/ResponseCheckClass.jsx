@@ -7,6 +7,7 @@ class ResponseCheck extends Component {
     result: [],
   };
 
+  // 렌더링이 다시 일어나지 않아야 하는 경우
   timerId;
   startTime;
   endTime;

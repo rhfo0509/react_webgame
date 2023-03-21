@@ -23,7 +23,7 @@ function getNumbers() {
 const NumberBaseball = () => {
   const [result, setResult] = useState("");
   const [value, setValue] = useState("");
-  // setAnsver에 함수를 넣으면 그 함수의 return값이 저장됨
+  // setAnswer에 함수를 넣으면 그 함수의 return값이 저장됨
   // 리렌더링될 때마다 함수가 쓸데없이 호출되는 것 방지(lazy init)
   const [answer, setAnswer] = useState(getNumbers);
   const [tries, setTries] = useState([]);

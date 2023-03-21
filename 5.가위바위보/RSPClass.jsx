@@ -34,7 +34,7 @@ class RSP extends Component {
     console.log(imgCoord);
     // imgCoord를 changeHand 바깥에 선언 시...
     // 클로저는 함수와 외부 변수와의 관계입니다.
-    // setTimeout 안에 있는 함수랑 바깥의 imgCoords가 클로저를 생성해서 값이 고정되어버립니다.
+    // setInterval 안에 있는 함수랑 바깥의 imgCoords가 클로저를 생성해서 값이 고정되어버립니다.
     // imgCoords는 구조분해 할당으로 인해서 참조가 아닌 값이 되는 것도 맞고요.
     this.interval = setInterval(this.changeHand, 100);
   }
@@ -74,7 +74,7 @@ class RSP extends Component {
 
     if ([1, -2].includes(diff)) {
       this.setState((prevState) => ({
-        result: '이겼습니다.',
+        result: "이겼습니다.",
         score: ++prevState.score,
       }));
     } else if (diff === 0) {
@@ -83,7 +83,7 @@ class RSP extends Component {
       });
     } else {
       this.setState((prevState) => ({
-        result: '졌습니다.',
+        result: "졌습니다.",
         score: --prevState.score,
       }));
     }
@@ -91,15 +91,15 @@ class RSP extends Component {
     // 결과 보여주고 2초 후 다시 실행
     // 이 때 동안은 클릭이 되지 않게 한다.
 
-    const target = document.getElementsByClassName('btn');
-    [...target].forEach(e => {
-      e.disabled = !e.disabled
+    const target = document.getElementsByClassName("btn");
+    [...target].forEach((e) => {
+      e.disabled = !e.disabled;
     });
 
     setTimeout(() => {
       this.interval = setInterval(this.changeHand, 100);
-      [...target].forEach(e => {
-        e.disabled = !e.disabled
+      [...target].forEach((e) => {
+        e.disabled = !e.disabled;
       });
     }, 2000);
   };

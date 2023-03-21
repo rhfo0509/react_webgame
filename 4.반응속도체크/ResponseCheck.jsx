@@ -7,7 +7,7 @@ const ResponseCheck = () => {
   const [message, setMessage] = useState("클릭해서 시작하세요.");
   const [result, setResult] = useState([]);
 
-  // 값이 변해도 렌더링할 필요가 없는 timerId, startTime, endTime
+  // 값이 변해도 렌더링할 필요가 없는 timerId, startTime, endTime의 경우
   // useRef 사용
   const timerId = useRef(null);
   const startTime = useRef();

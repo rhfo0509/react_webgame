@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
+import useInterval from "./useInterval";
 
 // 클래스의 경우 lifecycle
 // constructor -> render -> ref -> componentDidMount
@@ -23,18 +24,7 @@ const RSP = () => {
   const [result, setResult] = useState("");
   const [score, setScore] = useState(0);
   const [imgCoord, setImgCoord] = useState(rspCoords.바위);
-  const interval = useRef();
-
-  // componentDidMount, componentDidUpdate 역할
-  useEffect(() => {
-    console.log('실행');
-    interval.current = setInterval(changeHand, 1000);
-    // componentWillUnmount 역할
-    return () => {
-      console.log('종료');
-      clearInterval(interval.current);
-    }
-  }, [imgCoord]);
+  const [isRunning, setIsRunning] = useState(true);
 
   const changeHand = () => {
     if (imgCoord === rspCoords.바위) {
@@ -46,11 +36,11 @@ const RSP = () => {
     }
   };
 
-  const onClickBtn = (choice) => (e) => {
-    if (interval.current) {
-      clearInterval(interval.current);
-      interval.current = null;
+  useInterval(changeHand, isRunning ? 100 : null);
 
+  const onClickBtn = (choice) => (e) => {
+    if (isRunning) {
+      setIsRunning(false);
       const cpuScore = scores[computerChoice(imgCoord)];
       const myScore = scores[choice];
       const diff = myScore - cpuScore;
@@ -67,17 +57,8 @@ const RSP = () => {
 
       // 결과 보여주고 2초 후 다시 실행
       // 이 때 동안은 클릭이 되지 않게 한다.
-
-      const target = document.getElementsByClassName('btn');
-      [...target].forEach(e => {
-        e.disabled = !e.disabled
-      });
-
       setTimeout(() => {
-        [...target].forEach(e => {
-          e.disabled = !e.disabled
-        });
-        interval.current = setInterval(changeHand, 1000);
+        setIsRunning(true);
       }, 2000);
     }
   };
