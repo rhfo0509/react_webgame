@@ -142,7 +142,7 @@ key 값을 index로 설정하였기 때문에 리액트는 "key가 바뀌었네?
 </ul>
 ```
 
-객체 자체로는 unique하지만, key는 "문자열" 형식이다. 즉, 객체도 `[object Object]` 라는 문자열 형식으로 변환이 된다는 것이다.
+객체 자체로는 unique하지만, key는 "문자열" 형식이다. 즉, 서로 다른 객체라도 `[object Object]` 라는 같은 문자열 형식으로 변환이 된다는 것이다.
 따라서 동일한 키가 2개 이상 올 수 없다는 react key의 원칙에 위배가 되어 에러가 발생하게 된다.
 
 ---
@@ -153,13 +153,13 @@ Lazy initailize는 useState를 사용하여 state를 초기화하는 과정을 l
 1. setState()에 인수로 함수를 값으로 넘겨준다.
 2. setState(함수)이 진행되면 최초 초기화 진행 과정에서 함수을 실행하게 된다.
 3. 이후 업데이트(리렌더링 과정)에서 초기화가 진행되지 않기 때문에 함수을 실행하는 부분이 생략된다.
-이와 같이 lazy initialize는 초기값 계산에 많은 비용(연산 시간, 메모리 등)이 소요될 때 비효율적인 부분을 최적화하는데 사용할 수 있습니다.
+이와 같이 lazy initialize는 초기값 계산에 많은 비용(연산 시간, 메모리 등)이 소요될 때 비효율적인 부분을 최적화하는데 사용할 수 있다.
 
-`useState(heavyWork())` : 함수를 우선 실행한 다음 초기화여부를 논의
+`useState(heavyWork())` : 함수를 우선 실행한 다음 초기화여부를 논의<br />
 `useState(heavyWork)` : 초기화할지 비교하고 필요하면 그 때 함수를 실행
 
 따라서 getNumbers 함수처럼 처음 초기화할때만 실행하고 싶은 경우, `useState(heavyWork)` 형태를 사용하는 것이 좋다.
-그러나 `useState(...)`에서만 함수 형태를 넣고, `setSomething(...)`에서는 함수 대신 함수의 반환값을 넣도록 한다.
+그러나 `useState(...)`에서만 함수 형태를 넣고, `setSomething(...)`과 같은 형태에서는 함수 대신 함수의 반환값을 넣도록 한다.
 
 ---
 
@@ -179,7 +179,7 @@ shouldComponentUpdate(nextProps, nextState, nextContext) {
 클래스 컴포넌트에서, state와 props를 <b>얕은 비교</b>하여 변경된 내용이 있을 때만 리렌더링 + 자식 컴포넌트 리렌더링 방지
 
 > <b>깊은 비교(deep comparison) vs 얕은 비교(shallow comparison)</b>
-깊은 비교는 숫자나 문자열 같은 값들은 값을 비교하고, array나 function과 같은 object는 그 안에 들어있는 값을 일일이 확인한다.
+깊은 비교는 숫자나 문자열 같은 원시 자료형은 값을 비교하고, array나 function과 같은 object는 그 안에 들어있는 값을 일일이 확인한다.
 얕은 비교는 이에 반해 object들의 레퍼런스 체크(참조하고 있는 객체가 같은지)만 한다.
 
 아래 코드 같은 경우 `this.setState({ array: array })`의 두 array의 참조하는 객체가 같기 때문에 렌더링되지 않는다.
@@ -213,7 +213,7 @@ class Test extends PureComponent {
 }
 ```
 
-`this.setState({ array: [...this.state,array, 3]})` 처럼 spread syntax를 이용해 
+`this.setState({ array: [...this.state,array, 3]})` 처럼 <b>spread syntax</b>를 이용해 
 옛날 배열을 가져오는 대신 새로운 배열을 만들면 변화를 감지해 렌더링이 된다.
 
 ---
@@ -226,9 +226,7 @@ class Test extends PureComponent {
 3. 부모 컴포넌트가 렌더링되었을 때
 
 자식 컴포넌트에 달라진 변화가 없는 데, <b>3번</b>의 경우 때문에 렌더링되는 경우를 막기 위해 함수 컴포넌트를 `memo(함수 컴포넌트)`로 감싸준다.
-`컴포넌트.displayName`으로 컴포넌트 이름을 다시 되돌릴 수 있다.
+`컴포넌트.displayName = 컴포넌트명`으로 컴포넌트 이름을 다시 원래대로 되돌릴 수 있다.
 
 ---
-
-### React.createRef
 

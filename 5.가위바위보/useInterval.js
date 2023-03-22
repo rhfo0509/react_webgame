@@ -21,6 +21,7 @@ function useInterval(callback, delay) {
 
         if (delay !== null) {
             let id = setInterval(tick, delay);
+            console.log(id);
             return () => clearInterval(id);
         }
     }, [delay]);

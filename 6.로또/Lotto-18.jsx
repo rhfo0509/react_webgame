@@ -14,7 +14,7 @@ function getWinNumbers() {
   }
   const bonusNumber = shuffle[shuffle.length - 1];
   const winNumbers = shuffle.slice(0, 6).sort((p, c) => p - c);
-
+  console.log([...winNumbers, bonusNumber]);
   return [...winNumbers, bonusNumber];
 }
 
@@ -22,14 +22,16 @@ function getWinNumbers() {
 const Lotto = () => {
   // useMemo: 두번째 인자 배열의 요소가 바뀌지 않는 한 렌더링되지 않음
   // useMemo: 복잡한 함수 결과값을 기억, useRef: 일반 값을 기억
+
   const lottoNumbers = useMemo(() => getWinNumbers(), []);
   const [winNumbers, setWinNumbers] = useState(lottoNumbers);
+  // const [winNumbers, setWinNumbers] = useState(getWinNumbers());
   const [winBalls, setWinBalls] = useState([]);
   const [bonus, setBonus] = useState(null);
   const [redo, setRedo] = useState(false);
   const timeouts = useRef([]);
 
-  // input이 빈 배열이면 componentDidMount와 동일
+  // input이 빈 배열이면 componentDidMount와 동일.
   // 배열에 요소가 있으면 componentDidMount와 componentDidUpdate 둘 다 수행
   // return 부분: componentWillUnmount 자리
   useEffect(() => {
@@ -45,6 +47,7 @@ const Lotto = () => {
     }, 7000);
 
     return () => {
+      console.log('clearTimeout')
       timeouts.current.forEach((v) => clearTimeout(v));
     }
   }, [timeouts.current]);
@@ -54,7 +57,7 @@ const Lotto = () => {
   }, [winNumbers])
 
   // useCallback: 함수 자체를 기억, useCallback이 없다면 매번 새로운 함수 생성
-  // 자식 컴포넌트에 함수를 넘길 경우 useCallback 사용 필수! -> 부모가 매번 새로운 props를 전달한다고 생각하기 때문이다. (쓸데없이 리렌더링되는 문제)
+  // 자식 컴포넌트에 함수를 넘길 경우 useCallback 사용 필수! -> 부모가 매번 새로운 함수(props)를 전달한다고 생각하기 때문이다. (쓸데없이 리렌더링되는 문제)
   const onClickRedo = useCallback(() => {
     console.log('onClickRedo')
     console.log(winNumbers);  // 기억을 너무 잘해서 최초의 winNumbers만 반영됨, useCallback의 두 번째 배열에 state 값을 넣어주면 정상 반영됨
