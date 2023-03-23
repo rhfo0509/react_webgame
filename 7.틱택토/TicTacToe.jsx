@@ -62,6 +62,7 @@ const reducer = (state, action) => {
 };
 
 const TicTacToe = () => {
+  console.log('TicTacToe rendered');
   const [state, dispatch] = useReducer(reducer, initialState);
   // const [winner, setWinner] = useState('');
   // const [turn, setTurn] = useState('O');
@@ -72,6 +73,7 @@ const TicTacToe = () => {
   // click event가 발생하여 tableData가 변경되었을 때 실행
   useEffect(() => {
     const [row, cell] = recentCell;
+    // 처음 컴포넌트가 렌더링될 때도 useEffect가 실행되는데 이때 recentCell의 row와 cell이 -1이기 때문에 이 경우 useEffect가 실행되지 않도록 해야 한다.
     if (row < 0) return;
 
     console.log("useEffect");

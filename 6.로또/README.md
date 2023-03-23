@@ -34,6 +34,8 @@ useEffect(() => {
 ```
 이렇게 되면 ComponentDidMount의 경우 useEffect가 실행이 되지 않고, ComponentDidUpdate 시에만 ajax 요청을 할 수 있도록 활용이 가능하다.
 
+---
+
 ### Hooks에서 렌더링될 때마다 getWinNumbers가 다시 실행되는 문제
 `const [winNumbers, setWinNumbers] = useState(getWinNumbers())`에서 getWinNumbers 함수가 렌더링될 때마다 실행되고 있다.<br>
 
