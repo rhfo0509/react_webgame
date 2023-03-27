@@ -30,20 +30,25 @@ React에서 상태값을 업데이트 할 때 얕은 비교를 수행하는데, 
 
 ### useReducer
 
-* 참고할 만한 링크
+- 참고할 만한 링크
+
 https://velog.io/@iamhayoung/React-Hooks-useReducer%EC%97%90-%EB%8C%80%ED%95%B4-%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0#3%EF%B8%8F%E2%83%A3-dispatch-%ED%95%A8%EC%88%98
 
-* 사용 목적
+- 사용 목적
+
 state 업데이트 로직이 컴포넌트의 내부에 들어있는 useState와는 달리, 컴포넌트로부터 업데이트 로직을 분리할 수 있어 컴포넌트를 최적화시킬 수 있다는 장점이 있다. 또한 관리해야 할 state의 수가 많아지거나 복잡해질 경우 useReducer를 통해 한 번에 관리할 수 있다.
 
-* 기본적인 형태
+- 기본적인 형태
+
 `const [state, dispatch] = useReducer(reducer, initialState[, init])`
 
 1. dispatch 함수
+
 `dispatch({ type: CLICK_CELL, row: rowIndex, cell: cellIndex })`<br>
 dispatch 함수는 action 객체를 인수로 받으며, 바로 이어서 실행될 reducer 함수의 2번째 인수인 action 부분에 할당된다.
 
 2. reducer 함수
+
 ```
 const reducer = (state, action) => {
   switch (action.type) {
@@ -62,6 +67,7 @@ const reducer = (state, action) => {
   }
 };
 ```
+
 reducer 함수는 dispatch 함수에 의해 실행되며, 컴포넌트 외부에서 state를 업데이트하는 로직을 담당한다.<br>
 현재 상태인 state와 dispatch 함수로부터 전달받은 action 객체를 인수로 받으며, 현재 상태 state 값을 action 객체에 들어있는 변경된 state 값으로 업데이트한다.
 
@@ -98,13 +104,13 @@ dispatch는 동기 함수이다.<br>
 
 ### React.memo vs useMemo
 
-* React.memo : Higher-Order Components(HOC)
-> <b>Higher-Order Components</b>: 컴포넌트를 인자로 받아 새로운 컴포넌트롤 다시 return해주는 함수
+- React.memo : Higher-Order Components(HOC)
+  > <b>Higher-Order Components</b>: 컴포넌트를 인자로 받아 새로운 컴포넌트롤 다시 return해주는 함수
 
 ```
 const Td = memo(({ rowIndex, cellIndex, cellData, dispatch }) => {
   console.log("td rendered");
-  
+
   const onClickTd = useCallback(() => {
     if (cellData) return;
     console.log(rowIndex, cellIndex);
@@ -115,26 +121,29 @@ const Td = memo(({ rowIndex, cellIndex, cellData, dispatch }) => {
 ```
 
 위 코드의 경우 rowIndex, cellIndex, cellData, dispatch를 props로 받아 props의 변경이 감지되었을 경우 컴포넌트를 렌더링하고, props의 변화가 없을 경우 렌더링을 스킵하고 마지막에 렌더링된 결과를 사용한다.<br>
+즉, 어떤 컴포넌트를 어떤 props와 함께 불렀는지를 기록하고, 같은 경우에는 이전에 기록해둔 반환값을 사용하게 되는 것이다.<br>
 기본적으로 props로 들어온 object는 얕은 비교로 비교한다. 즉, props의 object와 같은 경우 "참조값"이 같은지만 비교한다는 것이다.
 
-* useMemo : memoize된 값을 return하는 hook으로, 값뿐만 아니라 컴포넌트 자체를 return할 수도 있다.
+- useMemo : 복잡한 계산으로 나온 결괏값을 return하는 hook으로, 값뿐만 아니라 React.memo처럼 컴포넌트 자체를 return할 수도 있다.
 
 ```
 useMemo(
-            () => (
-              // React.memo를 적용했는데도 자꾸 리렌더링이 발생하는 경우 최후의 수단
-              // 컴포넌트 자체를 기억
-              <Td
-                key={i}
-                rowIndex={rowIndex}
-                cellIndex={i}
-                cellData={rowData[i]}
-                dispatch={dispatch}
-              />
-            ),
-            [rowData[i]]
-          )
+  () => (
+    // React.memo를 적용했는데도 자꾸 리렌더링이 발생하는 경우 최후의 수단
+    // 컴포넌트 자체를 기억
+    <Td
+      key={i}
+      rowIndex={rowIndex}
+      cellIndex={i}
+      cellData={rowData[i]}
+      dispatch={dispatch}
+    />
+  ),
+  [rowData[i]]
+)
 ```
+
+두 번째 인자에는 dependency를 설정할 수 있는데, 여기서는 `rowData[i]`가 변경될 때만 첫 번째 인자에 들어있는 콜백을 동작시킨다고 보면 된다.
 
 
 

@@ -1,8 +1,9 @@
-import React, { useCallback, useState, useContext } from "react";
+import React, { useCallback, useState, useContext, memo } from "react";
 import { TableContext } from "./MineSearch";
 import { START_GAME } from "./MineSearch";
 
-const Form = () => {
+// timer 때문에 쓸데없이 계속 렌더링되는 것을 방지하기 위해 memo로 감싸준다.
+const Form = memo(() => {
   const [row, setRow] = useState(10);
   const [cell, setCell] = useState(10);
   const [mine, setMine] = useState(10);
@@ -52,6 +53,6 @@ const Form = () => {
       <button onClick={onClickBtn}>생성</button>
     </div>
   );
-};
+});
 
 export default Form;

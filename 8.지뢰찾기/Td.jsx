@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useMemo, memo } from "react";
 import {
   CODE,
   CLICK_MINE,
@@ -9,9 +9,11 @@ import {
   TableContext,
 } from "./MineSearch";
 
-const Td = ({ rowIndex, cellIndex }) => {
+// Table 컴포넌트에 memo를 적용하였으면 하위 컴포넌트인 Tr, Td 컴포넌트에도 memo를 적용시켜야 한다.
+const Td = memo(({ rowIndex, cellIndex }) => {
   const { tableData, halted, dispatch } = useContext(TableContext);
   const getTdStyle = (code) => {
+    console.log('getTdStyle');
     switch (code) {
       case CODE.NORMAL:
       case CODE.MINE:
@@ -114,7 +116,10 @@ const Td = ({ rowIndex, cellIndex }) => {
     },
     [tableData[rowIndex][cellIndex], halted]
   ); // 함수 안에서 사용하는 상태나 props는 꼭 deps 배열 내에 포함
-  return (
+
+    console.log('td rendered');
+
+  return useMemo(() =>(
     <td
       style={getTdStyle(tableData[rowIndex][cellIndex])}
       onClick={onClickTd}
@@ -122,7 +127,7 @@ const Td = ({ rowIndex, cellIndex }) => {
     >
       {getTdText(tableData[rowIndex][cellIndex])}
     </td>
-  );
-};
+  ), [tableData[rowIndex][cellIndex]]);
+});
 
 export default Td;

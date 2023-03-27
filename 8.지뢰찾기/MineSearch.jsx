@@ -1,4 +1,4 @@
-import React, { useReducer, createContext, useMemo } from "react";
+import React, { useReducer, createContext, useMemo, useEffect } from "react";
 import Form from "./Form";
 import Table from "./Table";
 
@@ -33,9 +33,11 @@ const initialState = {
   result: "",
   halted: true,
   openCount: 0,
+  timer: 0,
 };
 
 export const START_GAME = "START_GAME";
+export const INCREMENT_TIMER = "INCREMENT_TIMER";
 export const OPEN_CELL = "OPEN_CELL";
 export const CLICK_MINE = "CLICK_MINE";
 export const FLAG_CELL = "FLAG_CELL";
@@ -83,6 +85,8 @@ const reducer = (state, action) => {
         ...state,
         data,
         tableData: plantMine(action.row, action.cell, action.mine),
+        timer: 0,
+        result: "",
         halted: false,
         openCount: 0,
       };
@@ -151,11 +155,6 @@ const reducer = (state, action) => {
           near.push([row, cell - 1]);
           near.push([row, cell + 1]);
           if (row < tableData.length - 1) {
-            near = near.concat([
-              [row + 1, cell - 1],
-              [row + 1, cell],
-              [row + 1, cell + 1],
-            ]);
             near.push([row + 1, cell - 1]);
             near.push([row + 1, cell]);
             near.push([row + 1, cell + 1]);
@@ -184,13 +183,13 @@ const reducer = (state, action) => {
       let halted = false;
       let result = "";
       console.log(halted, result);
-      console.log(state.data.row, state.data.cell, state.data.mine);
+      console.log(state.data.row, state.data.cell, state.data.mine, state.openCount, openCount);
       if (
         state.data.row * state.data.cell - state.data.mine ===
         state.openCount + openCount
       ) {
         halted = true;
-        result = "승리하셨습니다.";
+        result = `승리하셨습니다. 소요시간: ${state.timer}초`;
       }
 
       console.log(OPEN_CELL, tableData);
@@ -212,6 +211,12 @@ const reducer = (state, action) => {
         ...state,
         tableData,
         halted: true,
+      };
+    }
+    case INCREMENT_TIMER: {
+      return {
+        ...state,
+        timer: state.timer + 1,
       };
     }
     case FLAG_CELL: {
@@ -266,13 +271,28 @@ const MineSearch = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { tableData, timer, result, halted } = state;
 
-  const value = useMemo(() => ({ tableData, halted, dispatch }), [tableData]);
+  const value = useMemo(
+    () => ({ tableData, halted, dispatch }),
+    [tableData, halted]
+  );
+
+  useEffect(() => {
+    let timer;
+    if (!halted) {
+      timer = setInterval(() => {
+        dispatch({ type: INCREMENT_TIMER });
+      }, 1000);
+    }
+    return () => {
+      clearInterval(timer);
+    };
+  }, [halted]);
 
   return (
     // Provider: 생성한 context를 하위 컴포넌트에 전달하는 역할
     // 하위 컴포넌트는 value에 대해 자유롭게 접근이 가능함
-    // 주의: MineSearch 컴포넌트가 리렌더링되면 value도 리렌더링됨=> useContext를 사용하고 있는 모든 컴포넌트도 리렌더링됨
-    // useMemo로 자식 컴포넌트 리렌더링 방지
+    // 주의: MineSearch 컴포넌트가 리렌더링되면 value 객체도 리렌더링됨=> context api를 사용하고 있는 모든 컴포넌트도 리렌더링됨
+    // useMemo로 자식 컴포넌트 리렌더링 방지 => dispatch는 바뀌지 않는 함수이기 때문에 deps 배열에 넣어줄 필요 X
     <TableContext.Provider value={value}>
       <Form />
       <div>{timer}</div>

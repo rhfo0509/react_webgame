@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, memo } from "react";
 import { TableContext } from "./MineSearch";
 import Tr from "./Tr";
 
-const Table = () => {
+// timer 때문에 쓸데없이 계속 렌더링되는 것을 방지하기 위해 memo로 감싸준다.
+const Table = memo(() => {
   const { tableData } = useContext(TableContext);
   return (
     <table>
@@ -15,6 +16,6 @@ const Table = () => {
       </tbody>
     </table>
   );
-};
+});
 
 export default Table;
